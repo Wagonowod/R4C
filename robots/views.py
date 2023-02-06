@@ -12,6 +12,5 @@ class RobotAPIView(APIView):
         serializer = RobotSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        # todo поправить ответ
 
         return Response({'post': serializer.data})
