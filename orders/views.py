@@ -1,8 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.mail import send_mail
+from customers.send_message import send_message
 
-from R4C import settings
 from robots.models import Robot
 from orders.models import Order
 
@@ -11,18 +10,9 @@ from orders.models import Order
 def robot_created(sender, instance, **kwargs):
     try:
         order = Order.objects.filter(robot_serial=instance.serial).select_related('customer').get()
-        message = f"""Добрый день!\nНедавно вы интересовались нашим роботом модели '{instance.model}', версии '{instance.version}'.\nЭтот робот теперь в наличии. Если вам подходит этот вариант - пожалуйста, свяжитесь с нами"""
-        mail_to = order.customer.email
         if order:
-            send_mail(
-                'Заказ робота',
-                message,
-                settings.EMAIL_HOST_USER,
-                [mail_to],
-                fail_silently=False
-            )
+            send_message(instance, order)
     except Order.DoesNotExist:
         print('Такого заказа не существует')
     except:
         print('Не удалось отправить письмо')
-

@@ -131,4 +131,5 @@ EMAIL_PORT = 465
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'devtest.tst@yandex.ru'
+
 # Для успешного тестирования необходимы ваши данные smtp сервера
