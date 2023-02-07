@@ -3,7 +3,7 @@ from openpyxl.workbook import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 from rest_framework.generics import ListAPIView
 from django.http import HttpResponse
-from django.db.models import Count, Q
+from django.db.models import Count
 from datetime import datetime, timedelta
 
 from robots.models import Robot
@@ -12,13 +12,13 @@ from robots.models import Robot
 class ReportViewSet(ListAPIView):
 
     def get(self, request, format=None):
-        delta = datetime.now() - timedelta(weeks=1)
-        delta.strftime("%Y-%m-%d %H:%M:%S")
+        report_period_from = datetime.now() - timedelta(weeks=1)
+        report_period_from.strftime("%Y-%m-%d %H:%M:%S")
         wb = Workbook()
         records = Robot.objects.values('model').distinct()
-        for row in records.all():
+        for row in records:
             rec = Robot.objects \
-                .filter(Q(model=row['model']) & Q(created__gt=delta)) \
+                .filter(model=row['model'], created__gt=report_period_from)\
                 .values('model', 'version') \
                 .annotate(total=Count('version'))
             ws = wb.create_sheet(row['model'])
