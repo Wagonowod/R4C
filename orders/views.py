@@ -10,8 +10,9 @@ from orders.models import Order
 def robot_created(sender, created, instance, **kwargs):
     try:
         if created:
-            order = Order.objects.filter(robot_serial=instance.serial).select_related('customer').get()
-            send_message(instance, order)
+            orders = Order.objects.filter(robot_serial=instance.serial).select_related('customer')
+            for order in orders:
+                send_message(instance, order)
     except Order.DoesNotExist:
         print('Такого заказа не существует')
     except:
