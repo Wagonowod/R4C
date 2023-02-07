@@ -7,10 +7,10 @@ from orders.models import Order
 
 
 @receiver(post_save, sender=Robot)
-def robot_created(sender, instance, **kwargs):
+def robot_created(sender, created, instance, **kwargs):
     try:
-        order = Order.objects.filter(robot_serial=instance.serial).select_related('customer').get()
-        if order:
+        if created:
+            order = Order.objects.filter(robot_serial=instance.serial).select_related('customer').get()
             send_message(instance, order)
     except Order.DoesNotExist:
         print('Такого заказа не существует')
